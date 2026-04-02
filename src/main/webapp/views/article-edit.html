@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我要发表</title>
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <!-- 引入Vue.js -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <!-- 引入Axios用于API请求 -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
+    <!-- 引入Bootstrap样式 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="../index.html"><img src="../static/images/logo.png" alt="LumeBlog" height="50"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active" id="nav-home">
+                    <a class="nav-link" href="../index.html">回到首页</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="article-list.html"
+                        @click.prevent="checkLoginBeforeNavigate('article-list.html')">我的文章</a>
+                </li>
+                <li>
+                    <a class="nav-link" href="#"
+                        @click.prevent="checkLoginBeforeNavigate('article-edit.html')">我要发表</a>
+                </li>
+            </ul>
+            <div class="form-inline my-2 my-lg-0" id="user-actions">
+                <a href="login.html" class="btn btn-outline-primary mr-2" v-if="!isLoggedIn">登录</a>
+                <a href="register.html" class="btn btn-primary mr-2" v-if="!isLoggedIn">注册</a>
+                <span class="mr-2" v-if="isLoggedIn">欢迎，{{ currentUser.nickname }}</span>
+                <button class="btn btn-outline-danger" v-if="isLoggedIn" @click="logout">登出</button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+    <div class="container mt-4">
+        <div id="article-edit-app">
+            <div class="row" v-if="loading">
+                <div class="col-md-12">
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="sr-only">加载中...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row" v-else-if="isLoggedIn">
+                <div class="col-md-12">
+                    <div class="article-edit">
+                        <h2>{{ isEditing ? '编辑文章' : '写文章' }}</h2>
+                        <div class="article-edit-form">
+                            <form @submit.prevent="saveArticle">
+                                <div class="form-group">
+                                    <label for="title">标题</label>
+                                    <input type="text" class="form-control" id="title" v-model="articleForm.title" placeholder="请输入文章标题" required>
+                                </div>
+                            
+                                <div class="form-group">
+                                    <label for="category">分类</label>
+                                    <select class="form-control" id="category" v-model="articleForm.categoryId" required>
+                                        <option value="">请选择分类</option>
+                                        <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
+                                    </select>
+                                </div>
+                            
+                                <div class="form-group">
+                                    <label for="content">内容</label>
+                                    <textarea class="form-control" id="content" v-model="articleForm.content" rows="15" placeholder="请输入文章内容"
+                                        required></textarea>
+                                </div>
+                            
+                                <div class="form-group">
+                                    <label for="summary">摘要（可选）</label>
+                                    <textarea class="form-control" id="summary" v-model="articleForm.summary" rows="3"
+                                        placeholder="请输入文章摘要"></textarea>
+                                    <small class="form-text text-muted">如果不填写，将自动从内容中截取前200字作为摘要</small>
+                                </div>
+                            
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary" :disabled="submitting">{{ submitting ? '保存中...' : '保存' }}</button>
+                                    <button type="button" class="btn btn-secondary ml-2" @click="goBack">取消</button>
+                                </div>
+                            </form>
+                        </div>
+                        <br><br><br>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row" v-else>
+                <div class="col-md-12">
+                    <div class="alert alert-danger">
+                        请先<a href="login.html">登录</a>哦
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 设置Axios默认配置
+        axios.defaults.baseURL = '/LumeBlog'; 
+        axios.defaults.headers.post['Content-Type'] = 'application/json';
+
+        // 添加请求拦截器，携带token
+        axios.interceptors.request.use(config => {
+            const userStr = sessionStorage.getItem('user');
+            if (userStr) {
+                const token = JSON.parse(userStr).token;
+                config.headers.common['Authorization'] = token;
+            }
+            return config;
+        });
+
+        // 用户操作Vue应用（导航栏）
+        const userApp = new Vue({
+            el: '#user-actions',
+            data: {
+                isLoggedIn: false,
+                currentUser: {}
+            },
+            mounted() {
+                this.checkLoginStatus();
+            },
+            methods: {
+                checkLoginStatus() {
+                    const userStr = sessionStorage.getItem('user');
+                    if (userStr) {
+                        try {
+                            const userData = JSON.parse(userStr);
+                            // 后端返回的格式是 {user: {...}, token: '...'}
+                            // 我们需要提取 user 对象
+                            this.currentUser = userData.user || userData;
+                            this.isLoggedIn = true;
+                        } catch (e) {
+                            sessionStorage.removeItem('user');
+                            this.isLoggedIn = false;
+                        }
+                    }
+                },
+                logout() {
+                    sessionStorage.removeItem('user');
+                    this.isLoggedIn = false;
+                    this.currentUser = {};
+                    // 通知文章编辑组件刷新登录状态
+                    articleEditApp.checkLoginStatus();
+                },
+                checkLoginBeforeNavigate(url) {
+                    if (!this.isLoggedIn) {
+                        alert('请先登录哦');
+                        return;
+                    }
+                    window.location.href = url;
+                }
+            }
+        });
+
+        // 文章编辑Vue应用
+        const articleEditApp = new Vue({
+            el: '#article-edit-app',
+            data: {
+                articleId: '',
+                isEditing: false,
+                categories: [],
+                articleForm: {
+                    title: '',
+                    content: '',
+                    categoryId: '',
+                    summary: ''
+                },
+                loading: true,
+                submitting: false,
+                isLoggedIn: false,
+                currentUser: {}
+            },
+            mounted() {
+                this.getArticleId();
+                this.checkLoginStatus();
+                this.loadCategories();
+                
+                if (this.isEditing && this.isLoggedIn) {
+                    this.loadArticle();
+                } else {
+                    this.loading = false;
+                }
+            },
+            methods: {
+                checkLoginStatus() {
+                    const userStr = sessionStorage.getItem('user');
+                    if (userStr) {
+                        try {
+                            const userData = JSON.parse(userStr);
+                            // 后端返回的格式是 {user: {...}, token: '...'}
+                            // 我们需要提取 user 对象
+                            this.currentUser = userData.user || userData;
+                            this.isLoggedIn = true;
+                        } catch (e) {
+                            this.isLoggedIn = false;
+                        }
+                    } else {
+                        this.isLoggedIn = false;
+                    }
+                },
+                logout() {
+                    sessionStorage.removeItem('user');
+                    this.isLoggedIn = false;
+                    this.currentUser = {};
+                },
+                getArticleId() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    this.articleId = urlParams.get('id');
+                    this.isEditing = !!this.articleId;
+                },
+                loadCategories() {
+                    axios.get('/api/categories')
+                        .then(response => {
+                            if (response.data.code === 200) {
+                                this.categories = response.data.data;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Load categories error:', error);
+                            alert('加载分类失败，请稍后重试');
+                        });
+                },
+                loadArticle() {
+                    if (!this.articleId) return;
+                    
+                    axios.get(`/api/articles/${this.articleId}`)
+                        .then(response => {
+                            if (response.data.code === 200) {
+                                const article = response.data.data;
+                                this.articleForm = {
+                                    title: article.title,
+                                    content: article.content,
+                                    categoryId: article.categoryId,
+                                    summary: article.summary
+                                };
+                            } else {
+                                alert(response.data.message || '加载文章失败');
+                                this.goBack();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Load article error:', error);
+                            alert('加载文章失败，请稍后重试');
+                            this.goBack();
+                        })
+                        .finally(() => {
+                            this.loading = false;
+                        });
+                },
+                saveArticle() {
+                    this.submitting = true;
+                    
+                    const articleData = {
+                        ...this.articleForm,
+                        categoryId: parseInt(this.articleForm.categoryId)
+                    };
+                    
+                    // 如果没有填写摘要，自动从内容中截取
+                    if (!articleData.summary) {
+                        // 截取前200字
+                        const plainText = articleData.content.replace(/[#*_\[\](){}~`>]/g, '').replace(/\n/g, ' ');
+                        articleData.summary = plainText.substring(0, 200) + (plainText.length > 200 ? '...' : '');
+                    }
+                    
+                    let request;
+                    if (this.isEditing) {
+                        request = axios.put(`/api/articles/${this.articleId}`, articleData);
+                    } else {
+                        request = axios.post('/api/articles', articleData);
+                    }
+                    
+                    request.then(response => {
+                        if (response.data.code === 200) {
+                            // 保存成功，跳转到文章详情页
+                            const articleId = response.data.data.id;
+                            window.location.href = `article-detail.html?id=${articleId}`;
+                        } else {
+                            alert(response.data.message || '保存失败');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Save article error:', error);
+                        alert('保存失败，请稍后重试');
+                    })
+                    .finally(() => {
+                        this.submitting = false;
+                    });
+                },
+                goBack() {
+                    window.location.href = 'article-list.html';
+                }
+            }
+        });
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
