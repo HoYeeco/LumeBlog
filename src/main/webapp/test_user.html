@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试用户信息</title>
+</head>
+<body>
+    <h1>测试用户信息</h1>
+    <div id="user-info">
+        <p>登录状态: <span id="login-status">未登录</span></p>
+        <div id="user-details" style="display: none;">
+            <h2>用户详情</h2>
+            <pre id="user-json"></pre>
+        </div>
+    </div>
+
+    <script>
+        // 检查登录状态和用户信息
+        function checkUserInfo() {
+            const userStr = sessionStorage.getItem('user');
+            if (userStr) {
+                try {
+                    const user = JSON.parse(userStr);
+                    document.getElementById('login-status').textContent = '已登录';
+                    document.getElementById('user-json').textContent = JSON.stringify(user, null, 2);
+                    document.getElementById('user-details').style.display = 'block';
+                } catch (e) {
+                    document.getElementById('login-status').textContent = '登录信息解析失败';
+                }
+            }
+        }
+
+        // 页面加载时检查用户信息
+        window.onload = checkUserInfo;
+    </script>
+</body>
+</html>
