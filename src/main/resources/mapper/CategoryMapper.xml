@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoico.dao.CategoryDAO">
+    
+    <!-- 定义结果映射 -->
+    <resultMap id="CategoryResultMap" type="com.hoico.model.Category">
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
+    </resultMap>
+    
+    <select id="findAll" resultMap="CategoryResultMap">
+        SELECT * FROM category ORDER BY id
+    </select>
+    
+    <select id="findById" parameterType="Integer" resultMap="CategoryResultMap">
+        SELECT * FROM category WHERE id = #{id}
+    </select>
+    
+    <insert id="insert" parameterType="com.hoico.model.Category">
+        INSERT INTO category (name, create_time, update_time)
+        VALUES (#{name}, #{createTime}, #{updateTime})
+    </insert>
+    
+    <update id="update" parameterType="com.hoico.model.Category">
+        UPDATE category SET
+        name = #{name},
+        update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+    
+    <delete id="delete" parameterType="Integer">
+        DELETE FROM category WHERE id = #{id}
+    </delete>
+</mapper>
