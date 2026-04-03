@@ -76,3 +76,4 @@ public class ArticleServiceImpl implements ArticleService {
         articleDAO.increaseViewCount(id);
     }
 }
+
