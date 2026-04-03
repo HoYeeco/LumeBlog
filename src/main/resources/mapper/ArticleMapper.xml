@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoico.dao.ArticleDAO">
+    
+    <!-- 基础查询结果映射 -->
+    <resultMap id="ArticleResultMap" type="com.hoico.model.Article">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="summary" column="summary"/>
+        <result property="userId" column="user_id"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="viewCount" column="view_count"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <!-- 关联映射 - 核心特性之一 -->
+        <association property="user" column="user_id" javaType="com.hoico.model.User">
+            <id property="id" column="user_id"/>
+            <result property="username" column="username"/>
+            <result property="nickname" column="nickname"/>
+        </association>
+        <association property="category" column="category_id" javaType="com.hoico.model.Category">
+            <id property="id" column="category_id"/>
+            <result property="name" column="category_name"/>
+        </association>
+    </resultMap>
+    
+    <!-- MyBatis动态SQL - 核心特性之一 -->
+    <select id="findAll" resultMap="ArticleResultMap">
+        SELECT a.*, u.username, u.nickname, c.name as category_name
+        FROM article a
+        LEFT JOIN user u ON a.user_id = u.id
+        LEFT JOIN category c ON a.category_id = c.id
+        ORDER BY a.create_time DESC
+    </select>
+    
+    <select id="findById" parameterType="Integer" resultMap="ArticleResultMap">
+        SELECT a.*, u.username, u.nickname, c.name as category_name
+        FROM article a
+        LEFT JOIN user u ON a.user_id = u.id
+        LEFT JOIN category c ON a.category_id = c.id
+        WHERE a.id = #{id}
+    </select>
+    
+    <!-- 动态SQL实现多条件查询 -->
+    <select id="findByCategory" parameterType="Integer" resultMap="ArticleResultMap">
+        SELECT a.*, u.username, u.nickname, c.name as category_name
+        FROM article a
+        LEFT JOIN user u ON a.user_id = u.id
+        LEFT JOIN category c ON a.category_id = c.id
+        WHERE 1=1
+        <if test="categoryId != null">
+            AND a.category_id = #{categoryId}
+        </if>
+        ORDER BY a.create_time DESC
+    </select>
+    
+    <select id="findByUser" parameterType="Integer" resultMap="ArticleResultMap">
+        SELECT a.*, u.username, u.nickname, c.name as category_name
+        FROM article a
+        LEFT JOIN user u ON a.user_id = u.id
+        LEFT JOIN category c ON a.category_id = c.id
+        WHERE a.user_id = #{userId}
+        ORDER BY a.create_time DESC
+    </select>
+    
+    <insert id="insert" parameterType="com.hoico.model.Article" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO article (title, content, summary, user_id, category_id, view_count, create_time, update_time)
+        VALUES (#{title}, #{content}, #{summary}, #{userId}, #{categoryId}, #{viewCount, jdbcType=INTEGER}, #{createTime}, #{updateTime})
+    </insert>
+    
+    <update id="update" parameterType="com.hoico.model.Article">
+        UPDATE article
+        <set>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="summary != null and summary != ''">summary = #{summary},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            update_time = #{updateTime}
+        </set>
+        WHERE id = #{id}
+    </update>
+    
+    <delete id="delete" parameterType="Integer">
+        DELETE FROM article WHERE id = #{id}
+    </delete>
+    
+    <update id="increaseViewCount" parameterType="Integer">
+        UPDATE article SET view_count = view_count + 1 WHERE id = #{id}
+    </update>
+    
+    <!-- 动态SQL查询 - 核心特性：MyBatis动态SQL -->
+    <select id="searchArticles" resultMap="ArticleResultMap">
+        SELECT a.*, u.username, u.nickname, c.name as category_name
+        FROM article a
+        LEFT JOIN user u ON a.user_id = u.id
+        LEFT JOIN category c ON a.category_id = c.id
+        <where>
+            <!-- 分类过滤 -->
+            <if test="categoryId != null">
+                AND a.category_id = #{categoryId}
+            </if>
+            <!-- 标题搜索 -->
+            <if test="title != null and title != ''">
+                AND a.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <!-- 作者搜索 -->
+            <if test="author != null and author != ''">
+                AND (u.nickname LIKE CONCAT('%', #{author}, '%') OR u.username LIKE CONCAT('%', #{author}, '%'))
+            </if>
+            <!-- 关键字搜索（标题、内容中搜索） -->
+            <if test="keyword != null and keyword != ''">
+                AND (a.title LIKE CONCAT('%', #{keyword}, '%') OR a.content LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <!-- 用户ID筛选（用于"我的文章"页面） -->
+            <if test="userId != null">
+                AND a.user_id = #{userId}
+            </if>
+        </where>
+        ORDER BY a.create_time DESC
+    </select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
