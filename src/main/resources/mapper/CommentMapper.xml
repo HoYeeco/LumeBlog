@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hoico.dao.CommentDAO">
+    
+    <resultMap id="CommentResultMap" type="com.hoico.model.Comment">
+        <id property="id" column="id"/>
+        <result property="articleId" column="article_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="content" column="content"/>
+        <result property="createTime" column="create_time"/>
+        <!-- 关联映射 -->
+        <association property="user" column="user_id" javaType="com.hoico.model.User">
+            <id property="id" column="user_id"/>
+            <result property="username" column="username"/>
+            <result property="nickname" column="nickname"/>
+        </association>
+    </resultMap>
+    
+    <select id="findByArticleId" parameterType="Integer" resultMap="CommentResultMap">
+        SELECT c.*, u.username, u.nickname, u.nickname, u.nickname
+        FROM comment c
+        LEFT JOIN user u ON c.user_id = u.id
+        WHERE c.article_id = #{articleId}
+        ORDER BY c.create_time DESC
+    </select>
+    
+    <select id="findByUserId" parameterType="Integer" resultMap="CommentResultMap">
+        SELECT c.*, u.username
+        FROM comment c
+        LEFT JOIN user u ON c.user_id = u.id
+        WHERE c.user_id = #{userId}
+        ORDER BY c.create_time DESC
+    </select>
+    
+    <select id="findById" parameterType="Integer" resultMap="CommentResultMap">
+        SELECT c.*, u.username
+        FROM comment c
+        LEFT JOIN user u ON c.user_id = u.id
+        WHERE c.id = #{id}
+    </select>
+    
+    <insert id="insert" parameterType="com.hoico.model.Comment">
+        INSERT INTO comment (article_id, user_id, content, create_time)
+        VALUES (#{articleId}, #{userId}, #{content}, #{createTime})
+    </insert>
+    
+    <delete id="delete" parameterType="Integer">
+        DELETE FROM comment WHERE id = #{id}
+    </delete>
+</mapper>
