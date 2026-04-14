@@ -132,6 +132,66 @@
               </div>
             </div>
 
+            <!-- 评论区 -->
+            <div class="comments-section mt-5">
+              <h3>评论 ({{ comments.length }})</h3>
+
+              <!-- 评论表单 -->
+              <div class="comment-form" v-if="isLoggedIn">
+                <h4>发表评论</h4>
+                <form @submit.prevent="submitComment">
+                  <div class="form-group">
+                    <textarea
+                      class="form-control"
+                      rows="4"
+                      v-model="commentContent"
+                      placeholder="请输入评论内容..."
+                      required
+                    ></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary">
+                    提交评论
+                  </button>
+                </form>
+              </div>
+
+              <!-- 未登录提示 -->
+              <div class="alert alert-info" v-else>
+                请先<a href="login.html">登录</a>才可以发表评论哦
+              </div>
+
+              <!-- 评论列表 -->
+              <div class="comments-list mt-4">
+                <div
+                  class="comment-item"
+                  v-for="comment in comments"
+                  :key="comment.id"
+                >
+                  <div class="comment-header">
+                    <strong
+                      >{{ comment.user ? comment.user.nickname : '未知用户'
+                      }}</strong
+                    >
+                    <span class="comment-time"
+                      >{{ formatDate(comment.createTime) }}</span
+                    >
+                  </div>
+                  <div class="comment-content">{{ comment.content }}</div>
+                  <button
+                    class="btn btn-sm btn-outline-danger mt-2"
+                    v-if="isLoggedIn && isCommentAuthor(comment)"
+                    @click="deleteComment(comment.id)"
+                  >
+                    删除
+                  </button>
+                </div>
+              </div>
+
+              <!-- 没有评论提示 -->
+              <div class="text-center" v-if="comments.length === 0">
+                <p>暂无评论，快来抢沙发吧~</p>
+              </div>
+            </div>
             <br /><br /><br />
           </div>
 
@@ -218,8 +278,10 @@
         data: {
           articleId: "",
           article: null,
+          comments: [],
           categories: [],
           relatedArticles: [],
+          commentContent: "",
           loading: true,
           isLoggedIn: false,
           currentUser: {},
@@ -274,6 +336,7 @@
                 console.log("API response:", response);
                 if (response.data.code === 200) {
                   this.article = response.data.data;
+                  this.loadComments();
                   this.loadRelatedArticles();
                 } else {
                   console.log("API returned non-200 code:", response.data.code);
@@ -284,6 +347,20 @@
               })
               .finally(() => {
                 this.loading = false;
+              });
+          },
+          loadComments() {
+            if (!this.articleId) return;
+
+            axios
+              .get(`/api/comments/article/${this.articleId}`)
+              .then((response) => {
+                if (response.data.code === 200) {
+                  this.comments = response.data.data;
+                }
+              })
+              .catch((error) => {
+                console.error("Load comments error:", error);
               });
           },
           loadCategories() {
@@ -314,12 +391,59 @@
                 console.error("Load related articles error:", error);
               });
           },
+          submitComment() {
+            if (!this.articleId || !this.commentContent.trim()) return;
+
+            const commentData = {
+              articleId: parseInt(this.articleId),
+              content: this.commentContent.trim(),
+            };
+
+            axios
+              .post("/api/comments", commentData)
+              .then((response) => {
+                if (response.data.code === 200) {
+                  this.commentContent = "";
+                  this.loadComments();
+                } else {
+                  alert(response.data.message || "评论失败");
+                }
+              })
+              .catch((error) => {
+                alert("评论失败，请稍后重试");
+                console.error("Submit comment error:", error);
+              });
+          },
           isAuthor(article) {
             return (
               this.isLoggedIn &&
               ((article.user && this.currentUser.id === article.user.id) ||
                 this.currentUser.role === "admin")
             );
+          },
+          isCommentAuthor(comment) {
+            return (
+              this.isLoggedIn &&
+              ((comment.user && this.currentUser.id === comment.user.id) ||
+                this.currentUser.role === "admin")
+            );
+          },
+          deleteComment(commentId) {
+            if (confirm("确定要删除这条评论吗？")) {
+              axios
+                .delete(`/api/comments/${commentId}`)
+                .then((response) => {
+                  if (response.data.code === 200) {
+                    this.loadComments();
+                  } else {
+                    alert(response.data.message || "删除失败");
+                  }
+                })
+                .catch((error) => {
+                  alert("删除失败，请稍后重试");
+                  console.error("Delete comment error:", error);
+                });
+            }
           },
           deleteArticle(articleId) {
             if (confirm("确定要删除这篇文章吗？")) {
