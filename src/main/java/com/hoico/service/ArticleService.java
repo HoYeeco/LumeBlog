@@ -15,6 +15,9 @@ public interface ArticleService {
     // 根据ID获取文章
     Article getArticleById(Integer id);
     
+    // 根据ID获取文章（包含当前用户的点赞状态）
+    Article getArticleByIdWithLikeInfo(Integer id, Integer userId);
+    
     // 根据分类获取文章
     List<Article> getArticlesByCategory(Integer categoryId);
     
