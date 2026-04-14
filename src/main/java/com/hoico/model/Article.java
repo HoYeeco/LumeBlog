@@ -1,6 +1,7 @@
 package com.hoico.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class Article {
     private Integer id;
@@ -16,6 +17,9 @@ public class Article {
     // 关联属性
     private User user;
     private Category category;
+    private List<Comment> comments;
+    private Integer likeCount; // 点赞数
+    private Boolean isLiked;   // 当前用户是否已点赞
 
     // getter and setter
     public Integer getId() {
@@ -104,5 +108,29 @@ public class Article {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public Integer getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    public Boolean getIsLiked() {
+        return isLiked;
+    }
+
+    public void setIsLiked(Boolean liked) {
+        isLiked = liked;
     }
 }
