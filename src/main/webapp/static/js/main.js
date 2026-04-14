@@ -244,6 +244,10 @@ const detailApp = new Vue({
             viewCount: 0,
             createTime: ''
         },
+        comments: [],
+        newComment: {
+            content: ''
+        },
         isLoggedIn: false,
         currentUser: {},
         relatedArticles: []
@@ -285,6 +289,7 @@ const detailApp = new Vue({
                 .then(response => {
                     if (response.data.code === 200) {
                         this.currentArticle = response.data.data;
+                        this.loadComments(articleId);
                     } else {
                         alert(response.data.message || '加载文章失败');
                     }
@@ -292,6 +297,66 @@ const detailApp = new Vue({
                 .catch(error => {
                     console.error('Load article detail error:', error);
                 });
+        },
+        loadComments(articleId) {
+            axios.get(`/api/comments/article/${articleId}`)
+                .then(response => {
+                    if (response.data.code === 200) {
+                        this.comments = response.data.data;
+                    }
+                })
+                .catch(error => {
+                    console.error('Load comments error:', error);
+                });
+        },
+        submitComment() {
+            if (!this.isLoggedIn) {
+                alert('请先登录哦');
+                return;
+            }
+            
+            if (!this.newComment.content.trim()) {
+                alert('评论内容不能为空');
+                return;
+            }
+            
+            const commentData = {
+                articleId: this.currentArticle.id,
+                content: this.newComment.content
+            };
+            
+            axios.post('/api/comments', commentData)
+                .then(response => {
+                    if (response.data.code === 200) {
+                        this.loadComments(this.currentArticle.id);
+                        this.newComment.content = '';
+                    } else {
+                        alert(response.data.message || '评论失败');
+                    }
+                })
+                .catch(error => {
+                    alert('评论失败，请稍后重试');
+                    console.error('Submit comment error:', error);
+                });
+            },
+            deleteComment(commentId) {
+            if (confirm('确定要删除这条评论吗？')) {
+                axios.delete(`/api/comments/${commentId}`)
+                    .then(response => {
+                        if (response.data.code === 200) {
+                            this.loadComments(this.currentArticle.id);
+                        } else {
+                            alert(response.data.message || '删除失败');
+                        }
+                    })
+                    .catch(error => {
+                        alert('删除失败，请稍后重试');
+                        console.error('Delete comment error:', error);
+                    });
+            }
+        },
+        isCommentAuthor(comment) {
+            return this.isLoggedIn && (comment.user && this.currentUser.id === comment.user.id || this.currentUser.role === 'admin');
         },
         backToList() {
             window.location.hash = '';
