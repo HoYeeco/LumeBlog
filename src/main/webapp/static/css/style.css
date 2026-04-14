@@ -1,197 +1,250 @@
 /* 全局样式 */
 body {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-  line-height: 1.6;
-  color: #333;
-  background: url("../images/bg.png") no-repeat center center fixed;
-  background-size: cover;
-  padding-top: 70px; /* 为固定导航栏预留空间 */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: url('../images/bg.png') no-repeat center center fixed;
+    background-size: cover;
+    padding-top: 70px; /* 为固定导航栏预留空间 */
 }
 
 /* 固定导航栏样式 */
 .navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  font-size: 18px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: rgba(255, 255, 255, 0.9);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    font-size: 18px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: rgba(255, 255, 255, 0.9);
 }
 
 /* 导航栏样式 */
 .navbar-nav .nav-link {
-  font-size: 18px;
-  padding: 10px 15px;
+    font-size: 18px; 
+    padding: 10px 15px; 
 }
 
 .navbar-brand {
-  font-size: 22px;
-  font-weight: bold;
+    font-size: 22px; 
+    font-weight: bold;
 }
 
 /* 文章列表样式 */
 .article-item {
-  background-color: #fff;
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease;
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
 }
 
 .article-item:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .article-item h3 {
-  margin-top: 0;
-  margin-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 10px;
 }
 
 .article-item h3 a {
-  color: rgb(93, 109, 61);
-  text-decoration: none;
-  transition: color 0.3s ease;
+    color: rgb(93, 109, 61);
+    text-decoration: none;
+    transition: color 0.3s ease;
 }
 
 .article-item h3 a:hover {
-  color: rgb(63, 84, 70);
+    color: rgb(63, 84, 70);
 }
 
 .article-item .meta {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 10px;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
 }
 
 .article-item .summary {
-  color: #555;
-  margin-bottom: 15px;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+    color: #555;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .article-item .article-actions {
-  text-align: right;
+    text-align: right;
 }
 
 .article-edit-form {
-  background-color: #eee;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #eee;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* 文章详情样式 */
 .article-detail {
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
 }
 
 .article-detail h1 {
-  margin-top: 0;
-  margin-bottom: 20px;
-  color: rgb(78, 83, 30);
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: rgb(78, 83, 30);
 }
 
 .article-detail .meta {
-  font-size: 15px;
-  color: #888d7f;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
+    font-size: 15px;
+    color: #888d7f;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
 }
 
 .article-detail .content {
-  font-size: 16px;
-  line-height: 1.8;
-  color: rgb(106, 115, 11);
-  margin-bottom: 30px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
+    font-size: 16px;
+    line-height: 1.8;
+    color: rgb(106, 115, 11);
+    margin-bottom: 30px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 .article-detail .content p {
-  margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 .article-detail .content h2 {
-  margin-top: 30px;
-  margin-bottom: 15px;
-  color: rgb(78, 83, 30);
+    margin-top: 30px;
+    margin-bottom: 15px;
+    color: rgb(78, 83, 30);
 }
 
 .article-detail .content h3 {
-  margin-top: 25px;
-  margin-bottom: 15px;
-  color: rgb(106, 115, 11);
+    margin-top: 25px;
+    margin-bottom: 15px;
+    color: rgb(106, 115, 11);
+}
+
+/* 评论区样式 */
+.comments-section {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.comments-section h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: rgb(78, 83, 30);
+}
+
+.comment-form textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+}
+
+.comment-list {
+    margin-top: 30px;
+}
+
+.comment-item {
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.comment-item:last-child {
+    border-bottom: none;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.comment-author {
+    font-weight: 600;
+    color: rgb(78, 83, 30);
+}
+
+.comment-time {
+    font-size: 14px;
+    color: #95a5a6;
+}
+
+.comment-content {
+    color: rgb(106, 115, 11);
+    line-height: 1.6;
 }
 
 /* 分类列表样式 */
 .category-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .category-list li {
-  margin-bottom: 8px;
+    margin-bottom: 8px;
 }
 
 .category-list a {
-  color: #555;
-  text-decoration: none;
-  display: block;
-  padding: 8px 12px;
-  border-radius: 4px;
-  transition: all 0.3s ease;
+    color: #555;
+    text-decoration: none;
+    display: block;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
 }
 
 .category-list a:hover,
 .category-list a.active {
-  background-color: rgb(93, 109, 61);
-  color: #fff;
+    background-color: rgb(93, 109, 61);
+    color: #fff;
 }
 
 /* 分页样式 */
 .pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
 }
 
 .pagination button {
-  min-width: 80px;
-  background-color: white !important;
+    min-width: 80px;
+    background-color: white !important;
 }
 
 /* 确保上一页和下一页按钮背景为白色 */
 .pagination .btn-outline-secondary {
-  background-color: white !important;
-  color: #777d6c;
-  border-color: #777d6c;
+    background-color: white !important;
+    color: #777d6c;
+    border-color: #777d6c;
 }
 
 /* 页数显示样式 */
 .pagination span.mx-2 {
-  font-size: 1.2rem;
-  color: white;
-  font-weight: bold;
+    font-size: 1.2rem;
+    color: white;
+    font-weight: bold;
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-    .article-detail {
+    .article-detail,
+    .comments-section {
         padding: 20px;
     }
     
@@ -210,98 +263,98 @@ body {
 
 /* 按钮样式 */
 .btn-primary {
-  background-color: rgb(93, 109, 61) !important;
-  border-color: rgb(93, 109, 61) !important;
-  color: #fff !important;
+    background-color: rgb(93, 109, 61) !important;
+    border-color: rgb(93, 109, 61) !important;
+    color: #fff !important;
 }
 
 .btn-primary:hover {
-  background-color: rgb(63, 84, 70) !important;
-  border-color: rgb(63, 84, 70) !important;
-  color: #fff !important;
+    background-color: rgb(63, 84, 70) !important;
+    border-color: rgb(63, 84, 70) !important;
+    color: #fff !important;
 }
 
 .btn-outline-primary {
-  color: rgb(93, 109, 61) !important;
-  border-color: rgb(93, 109, 61) !important;
+    color: rgb(93, 109, 61) !important;
+    border-color: rgb(93, 109, 61) !important;
 }
 
 .btn-outline-primary:hover {
-  background-color: rgb(93, 109, 61) !important;
-  color: #fff !important;
+    background-color: rgb(93, 109, 61) !important;
+    color: #fff !important;
 }
 
 /* 阅读全文链接样式 */
 a.text-primary {
-  color: rgb(93, 109, 61) !important;
+    color: rgb(93, 109, 61) !important;
 }
 
 a.text-primary:hover {
-  color: rgb(69, 84, 63) !important;
+    color: rgb(69, 84, 63) !important;
 }
 
 .btn-outline-secondary {
-  background-color: #777d6c;
-  color: #fff;
-  border-color: #777d6c;
+    background-color: #777d6c;
+        color: #fff;
+        border-color: #777d6c;
 }
 
 .btn-outline-secondary:hover {
-  background-color: #777d6c;
-  color: #fff;
-  border-color: #777d6c;
+    background-color: #777d6c;
+    color: #fff;
+    border-color: #777d6c;
 }
 
 /* 页面过渡效果 */
 #article-list,
 #article-detail {
-  transition: all 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 /* 加载动画 */
 .loading {
-  text-align: center;
-  padding: 40px 0;
-  color: #666;
+    text-align: center;
+    padding: 40px 0;
+    color: #666;
 }
 
 .loading::after {
-  content: "加载中...";
-  display: block;
-  font-size: 16px;
+    content: '加载中...';
+    display: block;
+    font-size: 16px;
 }
 
 /* 错误提示样式 */
 .alert {
-  margin-top: 15px;
-  margin-bottom: 0;
+    margin-top: 15px;
+    margin-bottom: 0;
 }
 
 /* 工具提示样式 */
 [title] {
-  cursor: help;
+    cursor: help;
 }
 
 /* 表单验证样式 */
 .form-control:focus {
-  border-color: rgb(93, 109, 61);
-  box-shadow: 0 0 0 0.2rem rgba(93, 109, 61, 0.25);
+    border-color: rgb(93, 109, 61);
+    box-shadow: 0 0 0 0.2rem rgba(93, 109, 61, 0.25);
 }
 
 /* 滚动条样式 */
 ::-webkit-scrollbar {
-  width: 8px;
+    width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+    background: #f1f1f1;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
+    background: #888;
+    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+    background: #555;
 }
