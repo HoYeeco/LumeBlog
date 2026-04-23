@@ -11,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
     <!-- 引入Bootstrap样式 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../static/css/style.css?v=20260331">
+    <link rel="stylesheet" href="../static/css/style.css">
     <!-- 引入Font Awesome图标库 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
 </head>
@@ -81,6 +81,10 @@
                             <a :href="'article-detail.html?id=' + article.id" class="btn btn-link">阅读全文</a>
                             <a :href="'article-edit.html?id=' + article.id" class="btn btn-sm btn-outline-info mr-2" v-if="isAuthor(article)">编辑</a>
                             <button class="btn btn-sm btn-outline-danger" v-if="isAuthor(article)" @click="deleteArticle(article.id)">删除</button>
+                            <button class="btn btn-link p-0 ml-2" @click="toggleLike(article)" v-if="isLoggedIn">
+                                <i class="fa" :class="article.isLiked ? 'fa-heart text-danger' : 'fa-heart-o text-muted'" style="font-size: 1.2rem;"></i>
+                                <span class="ml-1">{{ article.likeCount || 0 }}</span>
+                            </button>
                         </div>
                     </div>
                     <div class="pagination mt-4">
@@ -257,6 +261,12 @@
                         .then(response => {
                             if (response.data.code === 200) {
                                 this.articles = response.data.data.list;
+                                // 确保每个文章都有isLiked字段，默认设置为false
+                                this.articles.forEach(article => {
+                                    if (article.isLiked === undefined) {
+                                        article.isLiked = false;
+                                    }
+                                });
                                 this.totalPages = response.data.data.pages;
                                 this.currentPageNum = response.data.data.pageNum;
                             }
@@ -300,6 +310,30 @@
                                 console.error('Delete article error:', error);
                             });
                     }
+                },
+                // 点赞功能
+                toggleLike(article) {
+                    if (!this.isLoggedIn) {
+                        alert('请先登录');
+                        return;
+                    }
+                    
+                    axios.post('/api/likes/toggle', {
+                        articleId: article.id
+                    })
+                    .then(response => {
+                        if (response.data.code === 200) {
+                            // 更新文章的点赞状态和数量
+                            article.isLiked = response.data.data.isLiked;
+                            article.likeCount = response.data.data.likeCount;
+                        } else {
+                            alert(response.data.message || '点赞失败');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('点赞操作失败:', error);
+                        alert('点赞操作失败，请稍后重试');
+                    });
                 },
                 searchArticles() {
                     this.currentPageNum = 1;
