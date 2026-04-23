@@ -1,8 +1,6 @@
 package com.hoico.service;
-
 import com.github.pagehelper.PageInfo;
 import com.hoico.model.Article;
-
 import java.util.List;
 
 public interface ArticleService {
