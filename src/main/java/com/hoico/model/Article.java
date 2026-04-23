@@ -1,7 +1,6 @@
 package com.hoico.model;
 
 import java.util.Date;
-
 import java.util.List;
 
 public class Article {
