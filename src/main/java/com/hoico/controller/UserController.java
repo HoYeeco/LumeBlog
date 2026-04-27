@@ -64,10 +64,7 @@ public class UserController {
         if (userService.getUserByUsername(user.getUsername()) != null) {
             return ResponseResult.error("账号已存在");
         }
-        
-        // 核心特性：密码加密存储
-        user.setPassword(MD5Util.encrypt(user.getPassword()));
-        
+
         // 设置创建时间和更新时间
         Date now = new Date();
         user.setCreateTime(now);

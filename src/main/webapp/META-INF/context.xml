@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <!-- 设置URI编码为UTF-8 -->
+    <Parameter name="URIEncoding" value="UTF-8" override="false"/>
+    <Parameter name="useBodyEncodingForURI" value="true" override="false"/>
+</Context>
