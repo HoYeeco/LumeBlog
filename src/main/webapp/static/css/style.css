@@ -69,8 +69,9 @@ body {
 .article-item .summary {
     color: #555;
     margin-bottom: 15px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
     overflow: hidden;
 }
 

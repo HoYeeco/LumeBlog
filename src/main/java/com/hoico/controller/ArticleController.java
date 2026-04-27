@@ -66,7 +66,6 @@ public class ArticleController {
                 currentUserId = currentUser.getId();
             }
             
-            // 调用service层方法，传递筛选参数和当前登录用户ID用于点赞状态查询
             PageInfo<Article> pageInfo = articleService.searchArticles(pageNum, pageSize, title, author, keyword, categoryId, userId, currentUserId);
             return ResponseResult.success(pageInfo);
         } catch (Exception e) {
@@ -82,19 +81,9 @@ public class ArticleController {
     @GetMapping("/{id}")
     public ResponseResult getArticle(@PathVariable Integer id, HttpSession session) {
         try {
-            User user = (User) session.getAttribute("user");
-            Article article;
-            
-            if (user != null) {
-                // 已登录用户，获取包含点赞状态的文章
-                article = articleService.getArticleByIdWithLikeInfo(id, user.getId());
-            } else {
-                // 未登录用户，只获取基础信息
-                article = articleService.getArticleById(id);
-            }
+            Article article = articleService.getArticleById(id);
             
             if (article != null) {
-                // 增加浏览量
                 articleService.increaseViewCount(id);
                 return ResponseResult.success(article);
             } else {

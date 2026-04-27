@@ -219,28 +219,6 @@ const articleApp = new Vue({
                     });
             }
         },
-        toggleLike(article) {
-            if (!this.isLoggedIn) {
-                alert('请先登录');
-                return;
-            }
-            
-            axios.post('/api/likes/toggle', {
-                articleId: article.id
-            })
-            .then(response => {
-                if (response.data.code === 200) {
-                    article.isLiked = response.data.data.isLiked;
-                    article.likeCount = response.data.data.likeCount;
-                } else {
-                    alert(response.data.message || '点赞失败');
-                }
-            })
-            .catch(error => {
-                console.error('点赞操作失败:', error);
-                alert('点赞操作失败，请稍后重试');
-            });
-        },
         formatDate(date) {
             if (!date) return '';
             const d = new Date(date);
@@ -270,8 +248,6 @@ const detailApp = new Vue({
         newComment: {
             content: ''
         },
-        likeCount: 0,
-        isLiked: false,
         isLoggedIn: false,
         currentUser: {},
         relatedArticles: []
@@ -313,8 +289,6 @@ const detailApp = new Vue({
                 .then(response => {
                     if (response.data.code === 200) {
                         this.currentArticle = response.data.data;
-                        this.currentArticle.likeCount = this.currentArticle.likeCount || 0;
-                        this.currentArticle.isLiked = this.currentArticle.isLiked || false;
                         this.loadComments(articleId);
                     } else {
                         alert(response.data.message || '加载文章失败');
@@ -364,30 +338,8 @@ const detailApp = new Vue({
                     alert('评论失败，请稍后重试');
                     console.error('Submit comment error:', error);
                 });
-        },
-        toggleLike() {
-            if (!this.isLoggedIn) {
-                alert('请先登录哦');
-                return;
-            }
-            
-            axios.post('/api/likes/toggle', {
-                articleId: this.currentArticle.id
-            })
-            .then(response => {
-                if (response.data.code === 200) {
-                    this.currentArticle.isLiked = response.data.data.isLiked;
-                    this.currentArticle.likeCount = response.data.data.likeCount;
-                } else {
-                    alert(response.data.message || '操作失败');
-                }
-            })
-            .catch(error => {
-                console.error('点赞操作失败:', error);
-                alert('操作失败，请稍后重试');
-            });
-        },
-        deleteComment(commentId) {
+            },
+            deleteComment(commentId) {
             if (confirm('确定要删除这条评论吗？')) {
                 axios.delete(`/api/comments/${commentId}`)
                     .then(response => {
