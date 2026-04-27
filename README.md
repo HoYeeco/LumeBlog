@@ -14,7 +14,7 @@ LumeBlog是一个基于SSM（Spring + Spring MVC + MyBatis）框架开发的博�
 - **分页插件**：PageHelper 5.3.3
 - **日志**：Log4j 1.2.17
 - **构建工具**：Maven 3.x
-- **服务器**：Tomcat 10.1.x
+- **服务器**：Tomcat 10.1.49
 
 ### 前端技术
 
@@ -30,7 +30,8 @@ LumeBlog是一个基于SSM（Spring + Spring MVC + MyBatis）框架开发的博�
 3. **评论系统**：对文章进行评论、删除评论
 4. **分类管理**：文章分类筛选
 5. **搜索功能**：按标题、作者、关键字搜索文章
-6. **分页展示**：文章列表分页加载
+6. **点赞功能**：文章点赞/取消点赞
+7. **分页展示**：文章列表分页加载
 
 ## 框架特性应用
 
@@ -104,6 +105,7 @@ LumeBlog/
 - 评论管理：`/api/comments`（GET/POST/DELETE）
 - 用户管理：`/api/users`（POST登录/注册）
 - 分类管理：`/api/categories`（GET）
+- 点赞操作：`/api/likes/toggle`（POST）
 
 ## 备注
 
